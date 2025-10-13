@@ -8,6 +8,12 @@ mod cmd;
 
 #[cfg(not(test))]
 fn print_banner() {
+    use std::env;
+
+    if env::var("OVERLOAD_SILENT").ok() == Some("1".to_owned()) {
+        return;
+    }
+
     println!(
         r"
  ________________
