@@ -1,5 +1,12 @@
+use ctor::ctor;
+
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
+}
+
+#[ctor]
+pub fn hello() {
+    println!("hello")
 }
 
 #[cfg(test)]
