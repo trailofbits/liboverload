@@ -9,3 +9,7 @@ bench = false
 
 [dependencies]
 ctor = "0.6.0"
+shell-words = "1.1.0"
+
+[dev-dependencies]
+temp-env = "0.3.6"
