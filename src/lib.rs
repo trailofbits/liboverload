@@ -1,19 +1,16 @@
+use std::{env, ffi::c_uint};
+
 #[cfg(not(test))]
 use ctor::ctor;
-use std::ffi::c_uint;
+use env_logger::Builder;
+use log::{info, LevelFilter};
 
 mod cmd;
 mod exec;
 
 fn print_banner() {
-    use std::env;
-
-    if env::var("OVERLOAD_SILENT").ok() == Some("1".to_owned()) {
-        return;
-    }
-
-    println!(
-        r"
+    info!(
+        r"reporting from liboverload
  ________________
 < DOING OVERLOAD >
  ----------------
@@ -25,10 +22,16 @@ fn print_banner() {
       |        |  |
       |   __   +——/
       \__/  \__/    "
-    )
+    );
 }
 
-fn entry_point() {
+fn entry_point(method: &str) {
+    Builder::new()
+        .filter(None, LevelFilter::Info)
+        .parse_env("OVERLOAD_LOG")
+        .init();
+    info!("initialized via {}", method);
+
     print_banner();
     let cmd_args = cmd::from_env()
         .expect("error parsing cmd from env")
@@ -42,12 +45,12 @@ fn entry_point() {
 #[ctor]
 pub fn preload() {
     // LD_PRELOAD entrypoint
-    entry_point();
+    entry_point("LD_PRELOAD");
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn la_version(version: c_uint) -> c_uint {
     // LD_AUDIT entrypoint
-    entry_point();
+    entry_point("LD_AUDIT");
     version
 }
