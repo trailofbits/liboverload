@@ -1,4 +1,4 @@
-use std::{env, ffi::c_uint};
+use std::{env, ffi::c_uint, process};
 
 #[cfg(not(test))]
 use ctor::ctor;
@@ -32,6 +32,13 @@ fn entry_point(method: &str) {
         .init();
     info!("initialized via {}", method);
 
+    let original_cmd: Vec<String> = env::args().collect();
+    info!(
+        "this process is id {}, cmd: {:?}",
+        process::id(),
+        original_cmd
+    );
+
     print_banner();
     let cmd_args = cmd::from_env()
         .expect("error parsing cmd from env")
@@ -40,7 +47,7 @@ fn entry_point(method: &str) {
         exec::exec_command(cmd);
     } else {
         info!("bailing out and re-executing without liboverload (might fail!)");
-        exec::exec_command(env::args().collect());
+        exec::exec_command(original_cmd);
     }
 }
 
