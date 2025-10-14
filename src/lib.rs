@@ -38,6 +38,9 @@ fn entry_point(method: &str) {
         .or_else(|| cmd::from_file().expect("error parsing cmd from file"));
     if let Some(cmd) = cmd_args {
         exec::exec_command(cmd);
+    } else {
+        info!("bailing out and re-executing without liboverload (might fail!)");
+        exec::exec_command(env::args().collect());
     }
 }
 
