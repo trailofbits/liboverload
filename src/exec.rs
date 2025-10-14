@@ -7,5 +7,6 @@ pub fn exec_command(mut cmd: Vec<String>) -> io::Error {
     Command::new(&cmd[0])
         .args(args)
         .env_remove("LD_PRELOAD")
+        .env_remove("LD_AUDIT")
         .exec()
 }
