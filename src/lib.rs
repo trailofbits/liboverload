@@ -1,4 +1,8 @@
-use std::{env, ffi::c_uint, process};
+use std::{
+    env,
+    ffi::c_uint,
+    process::{self},
+};
 
 #[cfg(not(test))]
 use ctor::ctor;
@@ -7,6 +11,7 @@ use log::{info, LevelFilter};
 
 mod cmd;
 mod exec;
+mod io;
 
 fn print_banner() {
     info!(
@@ -40,14 +45,17 @@ fn entry_point(method: &str) {
     );
 
     print_banner();
+
+    let stdio = io::get_process_stdios();
+
     let cmd_args = cmd::from_env()
         .expect("error parsing cmd from env")
         .or_else(|| cmd::from_file().expect("error parsing cmd from file"));
     if let Some(cmd) = cmd_args {
-        exec::exec_command(cmd);
+        exec::exec_command(cmd, stdio);
     } else {
         info!("bailing out and re-executing without liboverload (might fail!)");
-        exec::exec_command(original_cmd);
+        exec::exec_command(original_cmd, io::get_inherit_stdios());
     }
 }
 

@@ -4,12 +4,17 @@ use std::process::Command;
 
 use log::info;
 
-pub fn exec_command(mut cmd: Vec<String>) -> io::Error {
+use crate::io::CmdStdio;
+
+pub fn exec_command(mut cmd: Vec<String>, stdio: CmdStdio) -> io::Error {
     info!("executing: {:?}", cmd);
     let args = cmd.split_off(1);
     Command::new(&cmd[0])
         .args(args)
         .env_remove("LD_PRELOAD")
         .env_remove("LD_AUDIT")
+        .stdin(stdio.0)
+        .stdout(stdio.1)
+        .stderr(stdio.2)
         .exec()
 }
