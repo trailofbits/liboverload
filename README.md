@@ -57,6 +57,19 @@ for the library:
 export OVERLOAD_LOG=debug
 ```
 
+## Stdio redirection
+
+`liboverload` lets you redirect the file descriptors for stdin, stdout, and
+stderr. By default, the existing file descriptors are reused, but you might
+redirect them to a file or pipe by setting `OVERLOAD_STDIN`, `OVERLOAD_STDOUT`
+or `OVERLOAD_STDERR` to a path.
+
+```sh
+export OVERLOAD_STDIN=/dev/null     # stdin will be read from /dev/null
+export OVERLOAD_STDOUT=captured_out # stdout will be written to a file named `capture_out`
+export OVERLOAD_STDERR=inherit      # stderr will be kept unchanged
+```
+
 ## Testing
 
 You can run tests for the `liboverload` functionality using Cargo:
