@@ -4,7 +4,7 @@ use std::{
     process::{self},
 };
 
-#[cfg(not(test))]
+#[cfg(all(not(test), feature = "ld_preload"))]
 use ctor::ctor;
 use env_logger::Builder;
 use log::{info, LevelFilter};
@@ -59,7 +59,7 @@ fn entry_point(method: &str) {
     }
 }
 
-#[cfg(not(test))] // needed to not run the library code during testing
+#[cfg(all(not(test), feature = "ld_preload"))] // needed to not run the library code during testing
 #[ctor]
 pub fn preload() {
     // LD_PRELOAD entrypoint
@@ -67,6 +67,7 @@ pub fn preload() {
 }
 
 #[unsafe(no_mangle)]
+#[cfg(feature = "ld_audit")]
 pub extern "C" fn la_version(version: c_uint) -> c_uint {
     // LD_AUDIT entrypoint
     entry_point("LD_AUDIT");
