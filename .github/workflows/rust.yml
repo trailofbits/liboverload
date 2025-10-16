@@ -20,3 +20,5 @@ jobs:
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+    - name: Run integration tests
+      run: tests/integration.sh target/debug/liboverload.so
