@@ -1,6 +1,8 @@
+#[cfg(all(not(target_os = "macos"), feature = "ld_audit"))]
+use std::ffi::c_uint;
+
 use std::{
     env,
-    ffi::c_uint,
     process::{self},
 };
 
@@ -59,15 +61,22 @@ fn entry_point(method: &str) {
     }
 }
 
-#[cfg(all(not(test), feature = "ld_preload"))] // needed to not run the library code during testing
+#[cfg(all(not(test), not(target_os = "macos"), feature = "ld_preload"))] // needed to not run the library code during testing
 #[ctor]
-pub fn preload() {
+pub fn preload_posix() {
     // LD_PRELOAD entrypoint
     entry_point("LD_PRELOAD");
 }
 
+#[cfg(all(not(test), target_os = "macos", feature = "ld_preload"))] // needed to not run the library code during testing
+#[ctor]
+pub fn preload_darwin() {
+    // DYLD_INSERT_LIBRARIES entrypoint
+    entry_point("DYLD_INSERT_LIBRARIES");
+}
+
 #[unsafe(no_mangle)]
-#[cfg(feature = "ld_audit")]
+#[cfg(all(not(target_os = "macos"), feature = "ld_audit"))]
 pub extern "C" fn la_version(version: c_uint) -> c_uint {
     // LD_AUDIT entrypoint
     entry_point("LD_AUDIT");

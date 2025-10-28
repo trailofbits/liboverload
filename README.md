@@ -6,8 +6,9 @@ or files.
 
 ## Features
 
-* Support for `LD_PRELOAD` and `LD_AUDIT` injection: Hooks into a running
-  process by dynamically loading itself as a shared library.
+* Support for `DYLD_INSERT_LIBRARIES`, `LD_PRELOAD` and `LD_AUDIT` injection:
+  Hooks into a running process by dynamically loading itself as a shared
+  library.
 * Multiple configuration methods: Reads command-line arguments from the
   environment or configuration files to execute commands.
 
@@ -34,8 +35,18 @@ export LD_PRELOAD=target/release/liboverload.so
 ./your_target_program
 ```
 
+Or on macOS:
+
+```sh
+export OVERLOAD_CMD="echo hello world"
+export DYLD_INSERT_LIBRARIES=target/release/liboverload.dylib
+./your_target_program
+```
+
 The library will print the banner and execute the command provided via the
-environment or configuration files.
+environment or configuration files. Note that on macOS, [not all dynamic
+binaries will load the
+library](https://theevilbit.github.io/posts/dyld_insert_libraries_dylib_injection_in_macos_osx_deep_dive/).
 
 You may also use `LD_AUDIT` to load the library:
 
